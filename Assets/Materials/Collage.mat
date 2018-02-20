@@ -42,6 +42,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LineText:
+        m_Texture: {fileID: 2800000, guid: 6166e54e94da00146aaf1faf1441522d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: bf6df541f0ab7804da3df46d808ad020, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -67,7 +71,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SecondTex:
-        m_Texture: {fileID: 2800000, guid: fbd079483b55bc94db1433e3ecd70d11, type: 3}
+        m_Texture: {fileID: 2800000, guid: d1aabe2bd007abd408f5d329f3df1af0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextTex:
+        m_Texture: {fileID: 2800000, guid: 7f7102eae07b2634bb1b29a23bf61d16, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ThirdTex:
