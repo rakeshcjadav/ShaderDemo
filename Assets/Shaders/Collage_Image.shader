@@ -1,4 +1,4 @@
-﻿Shader "Unlit/Collage"
+﻿Shader "Unlit/Collage_Image"
 {
 	Properties
 	{
