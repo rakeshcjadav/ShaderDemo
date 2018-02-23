@@ -4,6 +4,7 @@
 	{
 		DiffuseMap ("Texture", 2D) = "white" {}
 		AphaMap("Texture", 2D) = "white" {}
+		AphaMap2("Texture", 2D) = "white" {}
 		TextMap("Texture", 2D) = "white" {}
 		LineMap("Texture", 2D) = "white" {}
 	}
@@ -36,6 +37,7 @@
 
 			uniform sampler2D DiffuseMap;
 			uniform sampler2D AphaMap;
+			uniform sampler2D AphaMap2;
 			uniform sampler2D TextMap;
 			uniform sampler2D LineMap;
 
@@ -46,8 +48,13 @@
 
 			vec2 VideoRes = _ScreenParams.xy;
 
-			vec2 MapSize_0 =  vec2(1000.0, 1000.0);// vec2(1640.0, 924.0);
+			//vec2 MapSize_0 = vec2(1920.0, 1080.0);
+			//vec2 MapSize_0 = vec2(1000.0, 1000.0);
+			vec2 MapSize_0 = vec2(820.0, 624.0);
+			//vec2 MapSize_0 = vec2(1640.0, 624.0);
+			
 			vec2 AlphaMapSize = vec2(1210.0, 624.0);
+			vec2 AlphaMapSize2 = vec2(624.0, 624.0);
 			vec2 TextMapSize = VideoRes;
 			vec2 LineMapSize = vec2(80.0, 8.0);
 
@@ -112,6 +119,8 @@
 				vec2 vDiffusePos;
 				vec2 vDiffuseScale;
 
+				float fDiffuseScale;
+
 				vec2 vDiffuseScalePivot;
 
 				vec2 vMaskPos;
@@ -128,6 +137,8 @@
 
 				bool bScaleMaskAnim;
 				bool bScaleDiffuseAnim;
+
+				float fShear;
 			};
 
 			vec4 TextureColor(sampler2D DiffuseMap, sampler2D MaskMap, in Input input)
@@ -136,7 +147,7 @@
 				vOffset.x = Blend(input.vStartPos.x, 0.0, Ratio(input.timeStart, 0.5));// +Blend(0.0, input.vStartPos.x, Ratio(TimeDuration - 0.5, 0.5));
 
 				vec2 vDiffusePos = input.vDiffusePos;
-				vec2 vDiffuseScale = input.vDiffuseScale;
+				vec2 vDiffuseScale = input.vDiffuseScale * input.fDiffuseScale;
 				vDiffusePos -= vec2(0.5);
 
 				float fMaskScale_H = input.fMaskScale_H;
@@ -147,8 +158,8 @@
 					fMaskScale_H = Blend(1.0, input.fMaskScale_H, Ratio(input.timeStart + 0.5, input.timeDuration));
 				}
 
-				//if(input.bScaleDiffuseAnim)
-				//	vDiffuseScale = Blend(vDiffuseScale, vDiffuseScale*vec2(1.05), Ratio(input.timeStart, TimeDuration));
+				if(input.bScaleDiffuseAnim)
+					vDiffuseScale = Blend(vDiffuseScale, vDiffuseScale*vec2(1.05), Ratio(input.timeStart, TimeDuration));
 
 				vec4 color = vec4(0.0);
 				vec2 uvScaled = ScaleTexCoord(uv + vDiffusePos + vOffset, vDiffuseScale, input.vDiffuseScalePivot);
@@ -158,23 +169,13 @@
 				if (uvScaled.x < 0.0 || uvScaled.x > 1.0 || uvScaled.y < 0.0 || uvScaled.y > 1.0)
 					color = vec4(0.0);
 
-				vec4 colorScaled = vec4(0.0);
-				vec2 uvScaled2 = ScaleTexCoord(uv + vDiffusePos + vOffset, input.vDiffuseScale*vec2(3.5), input.vDiffuseScalePivot);
-				colorScaled = texture2D(DiffuseMap, uvScaled2) *vec4(0.3, 0.3, 0.3, 1.0);
-
-				if (uvScaled2.x < 0.0 || uvScaled2.x > 1.0 || uvScaled2.y < 0.0 || uvScaled2.y > 1.0)
-					colorScaled.a = 0.0;
-
-				color = color * color.a + colorScaled * (1.0 - color.a);
-
-				float fShear = -0.1;
-
 				vec2 vMaskPos = input.vMaskPos;
 				vMaskPos -= vec2(0.5);
 
-				vec2 uvMask = ScaleTexCoord(uv + vMaskPos + vOffset, input.vMaskScale);
+				vec2 uvf = uv;
+				uvf.x = uv.x + input.fShear * (uv.y - 1.0);// (uv.y - 0.5) * 2.0;
+				vec2 uvMask = ScaleTexCoord(uvf + vMaskPos + vOffset, input.vMaskScale);
 
-				uvMask.x = uvMask.x + fShear * (uvMask.y - 0.5) * 2.0;
 				uvMask = ScaleTexCoord(uvMask, vec2(fMaskScale_H, 1.0), input.vMaskScalePivot);
 
 				color *= texture2D(MaskMap, uvMask);
@@ -213,30 +214,47 @@
 				float fImageAR_0 = MapSize_0.x / MapSize_0.y;
 				float fImageAR_3 = TextMapSize.x / TextMapSize.y;
 				float fMaskAR = AlphaMapSize.x / AlphaMapSize.y;
+				float fMaskAR2 = AlphaMapSize2.x / AlphaMapSize2.y;
 
-				float fMaskScale = 2.48;
-				fMaskScale += Blend(1.0, 0.0, Ratio(timeStart, 0.8)) - Blend(1.0, 0.0, Ratio(TimeDuration - 0.5, 0.5));
+				float fShear = -0.13;// Blend(0.0, , Ratio(timeStart, 2.0));;
 
-				Input input1 = Input(vec2(0.5, 0.5), vec2(fImageAR_0 / fVideoAR, 1.0), vec2(0.0, 0.5),
-								vec2(0.75, 0.5), vec2(fMaskAR / fVideoAR, 1.0), vec2(0.5, 0.5),
-								fMaskScale, timeStart + 0.0, 0.5, vec2(-1.0, 0.0), false, true);
-				vec4 colorFirst = TextureColor(DiffuseMap, AphaMap, input1);
+				float fMaskScale = fImageAR_0 / fVideoAR;
+				float fImagePos_X = (0.5 - (fImageAR_0 / fVideoAR)*0.5);
+				if (fMaskScale > 0.5)
+				{
+					fMaskScale = 0.5;
+					fImagePos_X = 0.25;
+				}
+					
+				Input input1 = Input(vec2(0.5 + fImagePos_X, 0.5), vec2(fImageAR_0 / fVideoAR, 1.0), 1.0, vec2(0.5, 0.5),
+								vec2(0.5 + (0.5 - fMaskScale*0.5), 0.5), vec2(fMaskScale, 1.0), vec2(1.0, 0.5),
+								1.6, timeStart + 0.1, 0.5, vec2(1.0, 0.0), false, true, fShear);
+				vec4 colorFirst = TextureColor(DiffuseMap, AphaMap2, input1);
 
-				Input input4 = Input(vec2(0.5, 0.5), vec2(fImageAR_3 / fVideoAR, 1.0), vec2(0.5),
+				Input input2 = Input(vec2(0.64, 0.5), vec2(fImageAR_0 / fVideoAR, 1.0), 3.0, vec2(0.5, 0.5),
+							vec2(0.64, 0.5), vec2(1.0, 1.0), vec2(1.0, 0.5),
+							1.3, timeStart + 0.2, 0.5, vec2(1.0, 0.0), false, true, fShear);
+				vec4 colorSecond = TextureColor(DiffuseMap, AphaMap, input2);
+
+				colorSecond.a *= 0.5;
+
+				Input input4 = Input(vec2(0.5, 0.5), vec2(fImageAR_3 / fVideoAR, 1.0), 1.0, vec2(0.5),
 								vec2(0.115, 0.5), vec2(fMaskAR / fVideoAR, 1.0), vec2(0.5, 0.5),
-								1.3, timeStart + 0.2, 0.5, vec2(-0.05, 0.0), true, false);
+								1.3, timeStart + 0.3, 0.5, vec2(-0.05, 0.0), true, false, 0.0);
 				vec4 colorFourth = TextureColor(TextMap, AphaMap, input4);
 
-				colorFourth.a *= Blend(0.0, 1.0, Ratio(timeStart + 0.2, 0.5)) - Blend(0.0, 1.0, Ratio(TimeDuration - 0.7, 0.5));
+				colorFourth.a *= Blend(0.0, 1.0, Ratio(timeStart + 0.3, 0.5)) - Blend(0.0, 1.0, Ratio(TimeDuration - 0.7, 0.5));
 
 				//vec4 colorLine = LineColor(fMaskAR, fVideoAR);
 
 				//colorLine.a *= (Blend(0.0, 1.0, Ratio(timeStart + 0.6, 0.2)) - Blend(0.0, 1.0, Ratio(TimeDuration - 0.5, 0.5)));
 				
 				colorFirst.a *= Blend(1.0, 0.0, Ratio(TimeDuration - 0.5, 0.5));
+				colorSecond.a *= Blend(1.0, 0.0, Ratio(TimeDuration - 0.5, 0.5));
 
 				//finalColor.rgb = colorLine.rgb * colorLine.a + finalColor.rgb * (1.0 - colorLine.a);
 				finalColor.rgb = colorFourth.rgb * colorFourth.a + finalColor.rgb * (1.0 - colorFourth.a);
+				finalColor.rgb = colorSecond.rgb * colorSecond.a + finalColor.rgb * (1.0 - colorSecond.a);
 				finalColor.rgb = colorFirst.rgb * colorFirst.a + finalColor.rgb * (1.0 - colorFirst.a);
 			}
 
