@@ -3,8 +3,8 @@
 	Properties
 	{
 		DiffuseMap ("Texture", 2D) = "white" {}
-		AphaMap("Texture", 2D) = "white" {}
-		AphaMap2("Texture", 2D) = "white" {}
+		AlphaMap("Texture", 2D) = "white" {}
+		AlphaMap2("Texture", 2D) = "white" {}
 		TextMap("Texture", 2D) = "white" {}
 		LineMap("Texture", 2D) = "white" {}
 	}
@@ -36,8 +36,8 @@
 			#ifdef FRAGMENT
 
 			uniform sampler2D DiffuseMap;
-			uniform sampler2D AphaMap;
-			uniform sampler2D AphaMap2;
+			uniform sampler2D AlphaMap;
+			uniform sampler2D AlphaMap2;
 			uniform sampler2D TextMap;
 			uniform sampler2D LineMap;
 
@@ -229,19 +229,19 @@
 				Input input1 = Input(vec2(0.5 + fImagePos_X, 0.5), vec2(fImageAR_0 / fVideoAR, 1.0), 1.0, vec2(0.5, 0.5),
 								vec2(0.5 + (0.5 - fMaskScale*0.5), 0.5), vec2(fMaskScale, 1.0), vec2(1.0, 0.5),
 								1.6, timeStart + 0.1, 0.5, vec2(1.0, 0.0), false, true, fShear);
-				vec4 colorFirst = TextureColor(DiffuseMap, AphaMap2, input1);
+				vec4 colorFirst = TextureColor(DiffuseMap, AlphaMap, input1);
 
 				Input input2 = Input(vec2(0.64, 0.5), vec2(fImageAR_0 / fVideoAR, 1.0), 3.0, vec2(0.5, 0.5),
 							vec2(0.64, 0.5), vec2(1.0, 1.0), vec2(1.0, 0.5),
 							1.3, timeStart + 0.2, 0.5, vec2(1.0, 0.0), false, true, fShear);
-				vec4 colorSecond = TextureColor(DiffuseMap, AphaMap, input2);
+				vec4 colorSecond = TextureColor(DiffuseMap, AlphaMap2, input2);
 
 				colorSecond.a *= 0.5;
 
 				Input input4 = Input(vec2(0.5, 0.5), vec2(fImageAR_3 / fVideoAR, 1.0), 1.0, vec2(0.5),
 								vec2(0.115, 0.5), vec2(fMaskAR / fVideoAR, 1.0), vec2(0.5, 0.5),
 								1.3, timeStart + 0.3, 0.5, vec2(-0.05, 0.0), true, false, 0.0);
-				vec4 colorFourth = TextureColor(TextMap, AphaMap, input4);
+				vec4 colorFourth = TextureColor(TextMap, AlphaMap, input4);
 
 				colorFourth.a *= Blend(0.0, 1.0, Ratio(timeStart + 0.3, 0.5)) - Blend(0.0, 1.0, Ratio(TimeDuration - 0.7, 0.5));
 

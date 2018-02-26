@@ -18,6 +18,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - AlphaMap:
+        m_Texture: {fileID: 2800000, guid: de7e55bbb4a4ad34fbac521cbc252c0e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - AlphaMap2:
+        m_Texture: {fileID: 2800000, guid: 73cc93cf6b37381478f2a4b0c71a07b8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - AphaMap:
         m_Texture: {fileID: 2800000, guid: 73cc93cf6b37381478f2a4b0c71a07b8, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -27,7 +35,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - DiffuseMap:
-        m_Texture: {fileID: 2800000, guid: fbd079483b55bc94db1433e3ecd70d11, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7bbb16a89feb1524598463a6bccf0255, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - LineMap:
