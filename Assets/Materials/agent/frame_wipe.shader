@@ -171,19 +171,21 @@
 	{
 		finalColor = vec4(1.0);
 
-		float fStartAngle = 90.0;// 120.0 - Blend(0.0, 150.0, Ratio(TimeDuration / 2.0, TimeDuration / 2.0));
-		float fEndAngle = -90.0;// 120.0 - Blend(0.0, 150.0, Ratio(0.0, TimeDuration / 2.0));
+		float fStartAngle = Blend(90.0, 270.0, Ratio(0.0, TimeDuration));// 120.0 - Blend(0.0, 150.0, Ratio(TimeDuration / 2.0, TimeDuration / 2.0));
+		float fEndAngle = Blend(0.0, 360.0, Ratio(0.0, TimeDuration));// 120.0 - Blend(0.0, 150.0, Ratio(0.0, TimeDuration / 2.0));
 
-		vec2 vCenter = vec2(0.5, 0.5);// vec2(0.0 + Blend(0.0, 1.0, Ratio(0.0, TimeDuration)), 1.0 - Blend(0.0, 0.0, Ratio(0.0, TimeDuration / 2.0)));
+		vec2 vCenter = vec2(0.0 + Blend(0.0, 1.0, Ratio(0.0, TimeDuration)), Blend(0.0, 0.15, Ratio(0.0, TimeDuration/2.0))-Blend(0.0, 0.15, Ratio(TimeDuration / 2.0, TimeDuration / 2.0)));
 		vec2 vPixel = uv - vCenter;
 		float fPixelAngle = atan(vPixel.x, vPixel.y) + PI;
 
+		/*
 		if (fEndAngle < fStartAngle)
 		{
 			float temp = fStartAngle;
 			fStartAngle = fEndAngle;
 			fEndAngle = temp;
 		}
+		*/
 
 		if (fStartAngle < 0.0)
 			fStartAngle = 360.0 - fStartAngle;
@@ -193,11 +195,15 @@
 		fStartAngle = fStartAngle * PI / 180.0;
 		fEndAngle = fEndAngle * PI / 180.0;
 
+		//fStartAngle /= 2.0*PI;
+		float l = length(vPixel);
+		l = 0.1;
+		finalColor.a = smoothstep(fStartAngle-l/2.0, fStartAngle+l/2.0, fPixelAngle);
 		if (fEndAngle < fStartAngle)
 		{
-			if ((fPixelAngle > fStartAngle && fPixelAngle <= 2*PI) || (fPixelAngle < fEndAngle && fPixelAngle >= 0.0))
+			if ((fPixelAngle > fStartAngle && fPixelAngle <= 2*PI))// || (fPixelAngle < fEndAngle && fPixelAngle >= 0.0))
 			{
-				finalColor.a = 0.5;
+				//finalColor.a = 0.5;
 			}
 		}
 		//else if (fPixelAngle > fStartAngle && fPixelAngle < fEndAngle)
